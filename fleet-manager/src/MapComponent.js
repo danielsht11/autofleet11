@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { MapContainer, TileLayer, Polygon, FeatureGroup } from "react-leaflet";
+import { MapContainer, TileLayer, Polygon, FeatureGroup, Marker } from "react-leaflet";
 import { LatLngExpression } from "leaflet";
 import { EditControl } from "react-leaflet-draw";
 import axios from "axios";
@@ -7,12 +7,12 @@ import axios from "axios";
 const defaultPosition: LatLngExpression = [51.505, -0.09];
 
 const MapComponent = () => {
-  const [vehicleIds, setVehicleIds] = useState([]);
+  const [vehicles, setVehicles] = useState([]); // Define vehicles and setVehicles
   const [polygon, setPolygon] = useState([]);
 
   useEffect(() => {
     axios.get('http://127.0.0.1:5000/vehicles').then(response => {
-      setVehicleIds(response.data.map(vehicle => vehicle.id));
+      setVehicles(response.data); // Update this to use setVehicles
     });
   }, []);
 
@@ -21,13 +21,14 @@ const MapComponent = () => {
     let points = layer.getLatLngs(); // getting the coordinates of the polygon
     setPolygon(points[0]); // since getLatLngs() returns multi-dimensional array, take the first array
     axios.post('http://127.0.0.1:5000/vehicles/polygon', points[0]).then(response => {
-      setVehicleIds(response.data.map(vehicle => vehicle.id));
+      setVehicles(response.data); // Update this to use setVehicles
     });
   }
+
   return (
     <div>
-      <div id="map">  {/* add this id here */}
-        <MapContainer center={defaultPosition} zoom={13} style={{ height: "100vh", width: "100%" }}>  {/* and apply inline styles */}
+      <div id="map">
+        <MapContainer center={defaultPosition} zoom={13} style={{ height: "100vh", width: "100%" }}>
           <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
           <FeatureGroup>
             <EditControl
@@ -43,13 +44,16 @@ const MapComponent = () => {
             />
           </FeatureGroup>
           {polygon && <Polygon positions={polygon} />}
+          {vehicles.map((vehicle, index) => (
+            <Marker key={index} position={[vehicle.lat, vehicle.lng]} /> // Represent vehicles as markers on the map
+          ))}
         </MapContainer>
       </div>
       <div>
-        <h2>Vehicle IDs in Selected Area:</h2>
+        <h2>Vehicles in Selected Area:</h2>
         <ul>
-          {vehicleIds.map((id, index) => (
-            <li key={index}>{id}</li>
+          {vehicles.map((vehicle, index) => (
+            <li key={index}>Lat: {vehicle.lat}, Lng: {vehicle.lng}</li>
           ))}
         </ul>
       </div>
