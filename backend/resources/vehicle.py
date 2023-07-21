@@ -1,10 +1,10 @@
-from flask import json, request, jsonify
+from flask import json, request
 from flask.views import MethodView
-from flask_smorest import Blueprint, abort
+from flask_smorest import Blueprint
 import json
 from os import path
-from schemas import PlainVehicleSchema, VehicleLocationSchema, VehicleLocationRequestSchema
-from root import SITE_ROOT
+from backend.schemas import PlainVehicleSchema, VehicleLocationSchema
+from backend.root import SITE_ROOT
 from shapely import Polygon, Point
 
 blp = Blueprint("Vehicles", "vehicles", description="Operations on vehicles")
