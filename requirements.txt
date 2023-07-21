@@ -4,3 +4,4 @@ marshmallow
 pytest
 requests
 shapely
+flask-cors
