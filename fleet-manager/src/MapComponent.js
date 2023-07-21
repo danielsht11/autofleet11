@@ -3,27 +3,25 @@ import { MapContainer, TileLayer, Polygon, FeatureGroup, Marker } from "react-le
 import { LatLngExpression } from "leaflet";
 import { EditControl } from "react-leaflet-draw";
 import axios from "axios";
-import Modal from 'react-modal';
 
 const defaultPosition: LatLngExpression = [51.505, -0.09];
-Modal.setAppElement('#root');
 
 const MapComponent = () => {
-  const [vehicles, setVehicles] = useState([]); // Define vehicles and setVehicles
-  const [selectedVehicles, setSelectedVehicles] = useState([]); // Define selectedVehicles and setSelectedVehicles
+  const [vehicles, setVehicles] = useState([]);
+  const [selectedVehicles, setSelectedVehicles] = useState([]);
   const [polygon, setPolygon] = useState([]);
   const [modalIsOpen, setModalIsOpen] = useState(false);
 
   useEffect(() => {
       axios.get('http://127.0.0.1:5000/vehicles').then(response => {
-      setVehicles(response.data); // Update this to use setVehicles
+      setVehicles(response.data);
     });
   }, []);
 
   const handleCreated = (e) => {
-    let layer = e.layer; // accessing the layer that was drawn
-    let points = layer.getLatLngs(); // getting the coordinates of the polygon
-    setPolygon(points[0]); // since getLatLngs() returns multi-dimensional array, take the first array
+    let layer = e.layer;
+    let points = layer.getLatLngs();
+    setPolygon(points[0]);
     axios.post('http://127.0.0.1:5000/vehicles/polygon', points[0]).then(response => {
       setSelectedVehicles(response.data);
       setModalIsOpen(true);
@@ -59,29 +57,25 @@ const MapComponent = () => {
           ))}
         </MapContainer>
       </div>
-      <Modal
-        isOpen={modalIsOpen}
-        onRequestClose={() => setModalIsOpen(false)}
-        ariaHideApp={false}
-        style={{ // Optional styles
-          content: {
-            top: '50%',
-            left: '50%',
-            right: 'auto',
-            bottom: 'auto',
-            marginRight: '-50%',
-            transform: 'translate(-50%, -50%)'
-          }
-        }}
-      >
-        <h2>Vehicles in Selected Area:</h2>
-        <ul>
-          {selectedVehicles.map((vehicle, index) => (
-            <li key={index}>{vehicle.id}</li>
-          ))}
-        </ul>
-        <button onClick={handleModalClose}>Close</button>
-      </Modal>
+      {modalIsOpen &&
+        <div style={{
+          position: 'fixed',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          backgroundColor: 'white',
+          padding: '1em',
+          zIndex: 1000,
+        }}>
+          <h2>Vehicles in Selected Area:</h2>
+          <ul>
+            {selectedVehicles.map((vehicle, index) => (
+              <li key={index}>{vehicle.id}</li>
+            ))}
+          </ul>
+          <button onClick={handleModalClose}>Close</button>
+        </div>
+      }
     </div>
   );
 };
