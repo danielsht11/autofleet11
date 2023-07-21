@@ -5,7 +5,7 @@ class PlainVehicleSchema(Schema):
     id = fields.Str(dump_only=True)
 
 
-class VehicleLocationSchema(Schema):
+class VehicleLocationSchema(PlainVehicleSchema):
     lng = fields.Float(attribute="location.lng")
     lat = fields.Float(attribute="location.lat")
 
