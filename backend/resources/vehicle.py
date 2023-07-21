@@ -29,7 +29,7 @@ class Vehicles(MethodView):
 class VehiclesPolygon(MethodView):
     @staticmethod
     def parse_coordinates(coordinates: dict):
-        return [(coord.get("location").get("lng"), coord.get("location").get("lat")) for coord in coordinates]
+        return [(coord.get("lng"), coord.get("lat")) for coord in coordinates]
 
     @blp.response(200, PlainVehicleSchema(many=True))
     def post(self):
