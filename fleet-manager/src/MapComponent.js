@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { MapContainer, TileLayer, Polygon, FeatureGroup, Marker } from "react-leaflet";
-import { LatLngExpression } from "leaflet";
+import { MapContainer, TileLayer, Polygon, FeatureGroup, Marker, Popup } from "react-leaflet";
 import { EditControl } from "react-leaflet-draw";
 import axios from "axios";
+import { Modal, Button } from "react-bootstrap";
 
-const defaultPosition: LatLngExpression = [51.505, -0.09];
+const defaultPosition = [51.505, -0.09];
 
 const MapComponent = () => {
   const [vehicles, setVehicles] = useState([]);
@@ -33,49 +33,49 @@ const MapComponent = () => {
       setPolygon([]);
   }
 
-  return (
+ return (
     <div>
       <div id="map">
         <MapContainer center={defaultPosition} zoom={13} style={{ height: "100vh", width: "100%" }}>
           <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
           <FeatureGroup>
-            <EditControl
-              position="topright"
-              onCreated={handleCreated}
-              draw={{
-                rectangle: false,
-                polyline: false,
-                circle: false,
-                circlemarker: false,
-                marker: false
-              }}
+           <EditControl
+                position="topright"
+                onCreated={handleCreated}
+                draw={{
+                    rectangle: false,
+                    polyline: false,
+                    circle: false,
+                    circlemarker: false,
+                    marker: false
+                }}
             />
           </FeatureGroup>
-          {polygon && <Polygon positions={polygon} />}
+          {polygon.length > 0 && <Polygon positions={polygon} />}
           {vehicles.map((vehicle, index) => (
-            <Marker key={index} position={[vehicle.lat, vehicle.lng]} />
+            <Marker key={index} position={[vehicle.lat, vehicle.lng]}>
+              <Popup>
+                <span>Vehicle ID: {vehicle.id}</span>
+              </Popup>
+            </Marker>
           ))}
         </MapContainer>
       </div>
-      {modalIsOpen &&
-        <div style={{
-          position: 'fixed',
-          top: '50%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
-          backgroundColor: 'white',
-          padding: '1em',
-          zIndex: 1000,
-        }}>
-          <h2>Vehicles in Selected Area:</h2>
+      <Modal show={modalIsOpen} onHide={handleModalClose}>
+        <Modal.Header closeButton>
+          <Modal.Title>Vehicles Ids in Selected Area</Modal.Title>
+        </Modal.Header>
+        <Modal.Body style={{maxHeight: '300px', overflowY: 'auto'}}>
           <ul>
             {selectedVehicles.map((vehicle, index) => (
               <li key={index}>{vehicle.id}</li>
             ))}
           </ul>
-          <button onClick={handleModalClose}>Close</button>
-        </div>
-      }
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleModalClose}>Close</Button>
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 };
