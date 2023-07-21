@@ -1,9 +1,11 @@
 from flask_smorest import Api
 from flask import Flask, jsonify
 from resources.vehicle import blp as VehicleBluePrint
+from flask_cors import CORS
 
 def create_app():
     app = Flask(__name__)
+    CORS(app)
 
     app.config["PROPAGATE_EXCEPTIONS"] = True
     app.config["API_TITLE"] = "Tasks Management"
