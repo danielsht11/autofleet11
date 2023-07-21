@@ -23,7 +23,6 @@ button {
   font-size: 16px;
   margin: 4px 2px;
   cursor: pointer;
-  transition: 0.3s;
 }
 
 button:hover {
@@ -43,7 +42,6 @@ ul li {
   background-color: #f1f1f1;
   margin-bottom: 10px;
   border-radius: 5px;
-  transition: 0.3s;
 }
 
 ul li:hover {

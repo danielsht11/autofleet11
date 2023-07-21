@@ -4,6 +4,7 @@ import { EditControl } from "react-leaflet-draw";
 import axios from "axios";
 import { Modal, Button } from "react-bootstrap";
 import { divIcon } from 'leaflet';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 
 const defaultPosition = [51.505, -0.09];
@@ -68,16 +69,16 @@ const MapComponent = () => {
            ))}
         </MapContainer>
       </div>
-      <Modal show={modalIsOpen} onHide={handleModalClose}>
+      <Modal show={modalIsOpen} onHide={handleModalClose} size="lg">
         <Modal.Header closeButton>
           <Modal.Title>Vehicles Ids in Selected Area</Modal.Title>
         </Modal.Header>
-        <Modal.Body style={{maxHeight: '300px', overflowY: 'auto'}}>
-          <ul>
-            {selectedVehicles.map((vehicle, index) => (
-              <li key={index}>{vehicle.id}</li>
-            ))}
-          </ul>
+        <Modal.Body>
+           <ul className="list-group">
+              {selectedVehicles.map((vehicle, index) => (
+                <li key={index} className="list-group-item">{vehicle.id}</li>
+              ))}
+           </ul>
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={handleModalClose}>Close</Button>
