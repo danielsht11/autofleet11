@@ -24,13 +24,12 @@ const MapComponent = () => {
       setVehicleIds(response.data.map(vehicle => vehicle.id));
     });
   }
-
   return (
     <div>
-      <div id="map">
-        <MapContainer center={defaultPosition} zoom={13}>
+      <div id="map">  {/* add this id here */}
+        <MapContainer center={defaultPosition} zoom={13} style={{ height: "100vh", width: "100%" }}>  {/* and apply inline styles */}
           <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-          <FeatureGroup> {/* Wrap EditControl with FeatureGroup */}
+          <FeatureGroup>
             <EditControl
               position="topright"
               onCreated={handleCreated}
@@ -56,6 +55,7 @@ const MapComponent = () => {
       </div>
     </div>
   );
+
 };
 
 export default MapComponent;
