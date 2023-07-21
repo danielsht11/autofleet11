@@ -1,0 +1,6 @@
+flask
+flask-smorest
+marshmallow
+pytest
+requests
+shapely
