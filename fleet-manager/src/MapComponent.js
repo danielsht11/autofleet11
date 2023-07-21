@@ -3,6 +3,8 @@ import { MapContainer, TileLayer, Polygon, FeatureGroup, Marker, Popup } from "r
 import { EditControl } from "react-leaflet-draw";
 import axios from "axios";
 import { Modal, Button } from "react-bootstrap";
+import { divIcon } from 'leaflet';
+
 
 const defaultPosition = [51.505, -0.09];
 
@@ -29,9 +31,14 @@ const MapComponent = () => {
   }
 
   const handleModalClose = () => {
-      setModalIsOpen(false);
-      setPolygon([]);
+    setModalIsOpen(false);
+    setPolygon(null);
   }
+
+  const vehicleIcon = divIcon({
+    html: '🚙',
+    className: 'vehicle-icon',
+  });
 
  return (
     <div>
@@ -51,14 +58,14 @@ const MapComponent = () => {
                 }}
             />
           </FeatureGroup>
-          {polygon.length > 0 && <Polygon positions={polygon} />}
+          {polygon && <Polygon positions={polygon} />}
           {vehicles.map((vehicle, index) => (
-            <Marker key={index} position={[vehicle.lat, vehicle.lng]}>
-              <Popup>
-                <span>Vehicle ID: {vehicle.id}</span>
-              </Popup>
-            </Marker>
-          ))}
+              <Marker key={index} position={[vehicle.lat, vehicle.lng]} icon={vehicleIcon}>
+                <Popup>
+                  <span>Vehicle ID: {vehicle.id}</span>
+                </Popup>
+              </Marker>
+           ))}
         </MapContainer>
       </div>
       <Modal show={modalIsOpen} onHide={handleModalClose}>
