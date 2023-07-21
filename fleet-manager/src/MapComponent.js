@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { MapContainer, TileLayer, Polygon } from "react-leaflet";
+import { MapContainer, TileLayer, Polygon, FeatureGroup } from "react-leaflet";
 import { LatLngExpression } from "leaflet";
 import { EditControl } from "react-leaflet-draw";
 import axios from "axios";
@@ -11,7 +11,7 @@ const MapComponent = () => {
   const [polygon, setPolygon] = useState([]);
 
   useEffect(() => {
-    axios.get('http://localhost:5000/vehicles').then(response => {
+    axios.get('http://127.0.0.1:5000/vehicles').then(response => {
       setVehicleIds(response.data.map(vehicle => vehicle.id));
     });
   }, []);
@@ -20,7 +20,7 @@ const MapComponent = () => {
     let layer = e.layer; // accessing the layer that was drawn
     let points = layer.getLatLngs(); // getting the coordinates of the polygon
     setPolygon(points[0]); // since getLatLngs() returns multi-dimensional array, take the first array
-    axios.post('http://localhost:5000/vehicles/polygon', points[0]).then(response => {
+    axios.post('http://127.0.0.1:5000/vehicles/polygon', points[0]).then(response => {
       setVehicleIds(response.data.map(vehicle => vehicle.id));
     });
   }
@@ -30,17 +30,19 @@ const MapComponent = () => {
       <div id="map">
         <MapContainer center={defaultPosition} zoom={13}>
           <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-          <EditControl
-            position="topright"
-            onCreated={handleCreated}
-            draw={{
-              rectangle: false,
-              polyline: false,
-              circle: false,
-              circlemarker: false,
-              marker: false
-            }}
-          />
+          <FeatureGroup> {/* Wrap EditControl with FeatureGroup */}
+            <EditControl
+              position="topright"
+              onCreated={handleCreated}
+              draw={{
+                rectangle: false,
+                polyline: false,
+                circle: false,
+                circlemarker: false,
+                marker: false
+              }}
+            />
+          </FeatureGroup>
           {polygon && <Polygon positions={polygon} />}
         </MapContainer>
       </div>
