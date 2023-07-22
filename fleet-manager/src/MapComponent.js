@@ -3,9 +3,9 @@ import { MapContainer, TileLayer, Polygon, FeatureGroup, Marker, Popup } from "r
 import { EditControl } from "react-leaflet-draw";
 import axios from "axios";
 import { Modal, Button } from "react-bootstrap";
-import { divIcon } from 'leaflet';
-import 'bootstrap/dist/css/bootstrap.min.css';
-
+import { divIcon } from "leaflet";
+import "bootstrap/dist/css/bootstrap.min.css";
+import FilterComponent from "./FilterComponent";
 
 const defaultPosition = [51.505, -0.09];
 
@@ -14,54 +14,85 @@ const MapComponent = () => {
   const [selectedVehicles, setSelectedVehicles] = useState([]);
   const [polygon, setPolygon] = useState([]);
   const [modalIsOpen, setModalIsOpen] = useState(false);
+  const [filter, setFilter] = useState({ state: "", name: "" });
 
   useEffect(() => {
-    axios.get('http://127.0.0.1:5000/vehicles').then(response => {
-      setVehicles(response.data);
-    });
-  }, []);
+    fetchData();
+  }, [filter]);
+
+  const fetchData = () => {
+    axios
+      .get("http://127.0.0.1:5000/vehicles", { params: filter })
+      .then((response) => {
+        console.log("Received data:", response.data);
+        setVehicles(response.data);
+      })
+      .catch((error) => {
+        console.error("Error fetching data:", error);
+      });
+  };
 
   const handleCreated = (e) => {
     let layer = e.layer;
     let points = layer.getLatLngs();
     setPolygon(points[0]);
-    axios.post('http://127.0.0.1:5000/vehicles/polygon', points[0]).then(response => {
+    axios.post("http://127.0.0.1:5000/vehicles/polygon", points[0]).then((response) => {
       setSelectedVehicles(response.data);
       setModalIsOpen(true);
     });
-  }
+  };
 
   const handleModalClose = () => {
     setModalIsOpen(false);
     setPolygon(null);
-  }
+  };
 
-const iconsByClassName = {
-  A: divIcon({
-    html: "🏍️",
+  const iconsByClassName = {
+    A: divIcon({
+      html: "🏍️",
+      className: "vehicle-icon",
+    }),
+    B: divIcon({
+      html: "🚗",
+      className: "vehicle-icon",
+    }),
+    C: divIcon({
+      html: "🚛",
+      className: "vehicle-icon",
+    }),
+    D: divIcon({
+      html: "🚌",
+      className: "vehicle-icon",
+    }),
+    E: divIcon({
+      html: "🚚️️",
+      className: "vehicle-icon",
+    }),
+  };
+
+  const vehicleIcon = divIcon({
+    html: "🚙",
     className: "vehicle-icon",
-  }),
-  B: divIcon({
-    html: "🚗",
-    className: "vehicle-icon",
-  }),
-  C: divIcon({
-    html: "🚛",
-    className: "vehicle-icon",
-  }),
-  D: divIcon({
-    html: "🚌",
-    className: "vehicle-icon",
-  }),
-  E: divIcon({
-    html: "🚚️️",
-    className: "vehicle-icon",
-  }),
-};
+  });
+
+  const handleFilterApply = (appliedFilter) => {
+    setFilter(appliedFilter);
+  };
+
+  const filteredVehicles = vehicles.filter((vehicle) => {
+    const stateMatch = filter.state ? vehicle.state === filter.state : true;
+    const nameMatch = filter.name ? vehicle.name === filter.name : true;
+    return stateMatch && nameMatch;
+  });
 
   return (
     <div style={{ position: "relative", height: "100vh" }}>
-      <img src={process.env.PUBLIC_URL + "/icon.png"} alt="Static" style={{ position: "absolute", bottom: "10px", left: "10px", width: "200px", zIndex: "1000" }} />
+      <FilterComponent onFilterApply={handleFilterApply} />
+      <img
+        src={process.env.PUBLIC_URL + "/icon.png"}
+        alt="Static"
+        style={{ position: "absolute", bottom: "10px", left: "10px", width: "300px", zIndex: "1000" }}
+      />
       <div id="map">
         <MapContainer center={defaultPosition} zoom={13} style={{ height: "100%" }}>
           <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
@@ -74,18 +105,21 @@ const iconsByClassName = {
                 polyline: false,
                 circle: false,
                 circlemarker: false,
-                marker: false
+                marker: false,
               }}
             />
           </FeatureGroup>
           {polygon && <Polygon positions={polygon} />}
-          {vehicles.map((vehicle, index) => (
-            <Marker key={index} position={[vehicle.lat, vehicle.lng]} icon={iconsByClassName[vehicle.name]}>
-              <Popup>
-                <span>Vehicle ID: {vehicle.id}</span>
-              </Popup>
-            </Marker>
-          ))}
+          {filteredVehicles.map((vehicle, index) => {
+            const icon = iconsByClassName[vehicle.name] || vehicleIcon;
+            return (
+              <Marker key={index} position={[vehicle.lat, vehicle.lng]} icon={icon}>
+                <Popup>
+                  <span>Vehicle ID: {vehicle.id}</span>
+                </Popup>
+              </Marker>
+            );
+          })}
         </MapContainer>
       </div>
       <Modal show={modalIsOpen} onHide={handleModalClose} size="lg">
@@ -95,12 +129,16 @@ const iconsByClassName = {
         <Modal.Body>
           <ul className="list-group">
             {selectedVehicles.map((vehicle, index) => (
-              <li key={index} className="list-group-item">{vehicle.id}</li>
+              <li key={index} className="list-group-item">
+                {vehicle.id}
+              </li>
             ))}
           </ul>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={handleModalClose}>Close</Button>
+          <Button variant="secondary" onClick={handleModalClose}>
+            Close
+          </Button>
         </Modal.Footer>
       </Modal>
     </div>
