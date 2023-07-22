@@ -1,6 +1,6 @@
 # Setting Up the Project
 
-To run this project, follow the steps below:
+## Running the backend:
 
 1. Create a virtual environment:
    ```
@@ -27,7 +27,7 @@ To run this project, follow the steps below:
      ```
      set FLASK_APP=app
      ```
-     or (PowerShell):
+     or PowerShell:
      ```
      $env:FLASK_APP = "app"
      ```
@@ -41,3 +41,6 @@ To run this project, follow the steps below:
     flask run
    ```
 
+## Running the client:
+
+1. 
