@@ -16,7 +16,7 @@ const MapComponent = () => {
   const [modalIsOpen, setModalIsOpen] = useState(false);
 
   useEffect(() => {
-      axios.get('http://127.0.0.1:5000/vehicles').then(response => {
+    axios.get('http://127.0.0.1:5000/vehicles').then(response => {
       setVehicles(response.data);
     });
   }, []);
@@ -36,37 +36,56 @@ const MapComponent = () => {
     setPolygon(null);
   }
 
-  const vehicleIcon = divIcon({
-    html: '🚙',
-    className: 'vehicle-icon',
-  });
+const iconsByClassName = {
+  A: divIcon({
+    html: "🏍️",
+    className: "vehicle-icon",
+  }),
+  B: divIcon({
+    html: "🚗",
+    className: "vehicle-icon",
+  }),
+  C: divIcon({
+    html: "🚛",
+    className: "vehicle-icon",
+  }),
+  D: divIcon({
+    html: "🚌",
+    className: "vehicle-icon",
+  }),
+  E: divIcon({
+    html: "🚚️️",
+    className: "vehicle-icon",
+  }),
+};
 
- return (
-    <div>
+  return (
+    <div style={{ position: "relative", height: "100vh" }}>
+      <img src={process.env.PUBLIC_URL + "/icon.png"} alt="Static" style={{ position: "absolute", bottom: "10px", left: "10px", width: "200px", zIndex: "1000" }} />
       <div id="map">
-        <MapContainer center={defaultPosition} zoom={13} style={{ height: "100vh", width: "100%" }}>
+        <MapContainer center={defaultPosition} zoom={13} style={{ height: "100%" }}>
           <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
           <FeatureGroup>
-           <EditControl
-                position="topright"
-                onCreated={handleCreated}
-                draw={{
-                    rectangle: false,
-                    polyline: false,
-                    circle: false,
-                    circlemarker: false,
-                    marker: false
-                }}
+            <EditControl
+              position="topright"
+              onCreated={handleCreated}
+              draw={{
+                rectangle: false,
+                polyline: false,
+                circle: false,
+                circlemarker: false,
+                marker: false
+              }}
             />
           </FeatureGroup>
           {polygon && <Polygon positions={polygon} />}
           {vehicles.map((vehicle, index) => (
-              <Marker key={index} position={[vehicle.lat, vehicle.lng]} icon={vehicleIcon}>
-                <Popup>
-                  <span>Vehicle ID: {vehicle.id}</span>
-                </Popup>
-              </Marker>
-           ))}
+            <Marker key={index} position={[vehicle.lat, vehicle.lng]} icon={iconsByClassName[vehicle.name]}>
+              <Popup>
+                <span>Vehicle ID: {vehicle.id}</span>
+              </Popup>
+            </Marker>
+          ))}
         </MapContainer>
       </div>
       <Modal show={modalIsOpen} onHide={handleModalClose} size="lg">
@@ -74,11 +93,11 @@ const MapComponent = () => {
           <Modal.Title>Vehicles Ids in Selected Area</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-           <ul className="list-group">
-              {selectedVehicles.map((vehicle, index) => (
-                <li key={index} className="list-group-item">{vehicle.id}</li>
-              ))}
-           </ul>
+          <ul className="list-group">
+            {selectedVehicles.map((vehicle, index) => (
+              <li key={index} className="list-group-item">{vehicle.id}</li>
+            ))}
+          </ul>
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={handleModalClose}>Close</Button>

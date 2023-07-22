@@ -3,7 +3,7 @@ from flask.views import MethodView
 from flask_smorest import Blueprint
 import json
 from os import path
-from schemas import PlainVehicleSchema, VehicleLocationSchema
+from schemas import PlainVehicleSchema, VehicleSchema
 from root import SITE_ROOT
 from shapely import Polygon, Point
 
@@ -19,7 +19,7 @@ def load_json():
 
 @blp.route("/vehicles")
 class Vehicles(MethodView):
-    @blp.response(200, VehicleLocationSchema(many=True))
+    @blp.response(200, VehicleSchema(many=True))
     def get(self):
         vehicles = load_json()
         return vehicles

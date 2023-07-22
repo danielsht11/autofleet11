@@ -35,4 +35,9 @@ To run this project, follow the steps below:
      ```
      export FLASK_APP=app
      ```
+     
+5. Run the Flask app:
+    ```
+    flask run
+   ```
 
