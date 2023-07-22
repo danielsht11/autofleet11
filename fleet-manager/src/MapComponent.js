@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { MapContainer, TileLayer, Polygon, FeatureGroup, Marker, Popup } from "react-leaflet";
 import { EditControl } from "react-leaflet-draw";
 import axios from "axios";
@@ -15,6 +15,8 @@ const MapComponent = () => {
   const [polygon, setPolygon] = useState([]);
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [filter, setFilter] = useState({ state: "", name: "" });
+
+  const filterRef = useRef(filter); // Initialize a ref with the current filter state
 
   useEffect(() => {
     fetchData();
@@ -36,7 +38,13 @@ const MapComponent = () => {
     let layer = e.layer;
     let points = layer.getLatLngs();
     setPolygon(points[0]);
-    axios.post("http://127.0.0.1:5000/vehicles/polygon", points[0]).then((response) => {
+
+    const dataToSend = {
+      points: points[0], // Send the points
+      filter: filterRef.current, // Use the ref value to get the latest filter
+    };
+
+    axios.post("http://127.0.0.1:5000/vehicles/polygon", dataToSend).then((response) => {
       setSelectedVehicles(response.data);
       setModalIsOpen(true);
     });
@@ -77,6 +85,7 @@ const MapComponent = () => {
 
   const handleFilterApply = (appliedFilter) => {
     setFilter(appliedFilter);
+    filterRef.current = appliedFilter; // Update the ref with the latest filter value
   };
 
   const filteredVehicles = vehicles.filter((vehicle) => {
@@ -91,7 +100,7 @@ const MapComponent = () => {
       <img
         src={process.env.PUBLIC_URL + "/icon.png"}
         alt="Static"
-        style={{ position: "absolute", bottom: "10px", left: "10px", width: "300px", zIndex: "1000" }}
+        style={{ position: "absolute", bottom: "10px", left: "10px", width: "200px", zIndex: "1000" }}
       />
       <div id="map">
         <MapContainer center={defaultPosition} zoom={13} style={{ height: "100%" }}>
