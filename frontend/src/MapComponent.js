@@ -16,7 +16,7 @@ const MapComponent = () => {
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [filter, setFilter] = useState({ state: "", name: "" });
 
-  const filterRef = useRef(filter); // Initialize a ref with the current filter state
+  const filterRef = useRef(filter);
 
   useEffect(() => {
     fetchData();
@@ -40,8 +40,8 @@ const MapComponent = () => {
     setPolygon(points[0]);
 
     const dataToSend = {
-      points: points[0], // Send the points
-      filter: filterRef.current, // Use the ref value to get the latest filter
+      points: points[0],
+      filter: filterRef.current,
     };
 
     axios.post("http://127.0.0.1:5000/vehicles/polygon", dataToSend).then((response) => {
@@ -85,7 +85,7 @@ const MapComponent = () => {
 
   const handleFilterApply = (appliedFilter) => {
     setFilter(appliedFilter);
-    filterRef.current = appliedFilter; // Update the ref with the latest filter value
+    filterRef.current = appliedFilter;
   };
 
   const filteredVehicles = vehicles.filter((vehicle) => {

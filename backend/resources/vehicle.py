@@ -43,16 +43,19 @@ class VehiclesPolygon(MethodView):
 
         def get_vehicles_in_polygon(vehicle: dict):
 
-            def _get_vehicle_location() -> tuple:
+            def _is_vehicle_in_polygon() -> bool:
                 lng = vehicle.get("location").get("lng")
                 lat = vehicle.get("location").get("lat")
-                return lng, lat
+                vehicle_location = Point(lng, lat)
+                return vehicle_location.within(polygon)
 
             def _is_vehicle_matching_filter() -> bool:
                 vehicle_state = vehicle.get("state")
                 vehicle_name = vehicle.get("class").get("name")
+
                 is_vehicle_match_state = vehicle_state == state
                 is_vehicle_match_name = vehicle_name == name
+
                 if is_vehicle_match_state and is_vehicle_match_name:
                     return True
                 elif not state and is_vehicle_match_name:
@@ -61,9 +64,7 @@ class VehiclesPolygon(MethodView):
                     return True
                 return False
 
-            vehicle_lng, vehicle_lat = _get_vehicle_location()
-            vehicle_location = Point(vehicle_lng, vehicle_lat)
-            if vehicle_location.within(polygon):
+            if _is_vehicle_in_polygon():
                 if not state and not name:
                     return True
                 return _is_vehicle_matching_filter()
