@@ -20,11 +20,11 @@ const MapComponent = () => {
 
   useEffect(() => {
     fetchData();
-  }, [filter]);
+  }, []);
 
   const fetchData = () => {
     axios
-      .get("http://127.0.0.1:5000/vehicles", { params: filter })
+      .get("http://127.0.0.1:5000/vehicles")
       .then((response) => {
         console.log("Received data:", response.data);
         setVehicles(response.data);
@@ -74,7 +74,7 @@ const MapComponent = () => {
     }),
     E: divIcon({
       html: "🚚️️",
-      className: "vehicle-icon",
+          className: "vehicle-icon",
     }),
   };
 
