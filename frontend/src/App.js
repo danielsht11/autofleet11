@@ -1,11 +1,14 @@
-import React from "react";
+import { BrowserRouter as Router, Route, Navigate, Routes } from 'react-router-dom';
 import MapComponent from "./MapComponent";
 
 function App() {
   return (
-    <div className="App">
-      <MapComponent />
-    </div>
+    <Router>
+      <Routes>
+        <Route path="/autofleet-dashboard" element={<MapComponent />} />
+        <Route path="/" element={<Navigate to="/autofleet-dashboard" />} />
+      </Routes>
+    </Router>
   );
 }
 

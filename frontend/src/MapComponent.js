@@ -41,7 +41,8 @@ const MapComponent = () => {
 
     const dataToSend = {
       points: points[0],
-      filter: filterRef.current,
+      state: filterRef.current.state,
+      name: filterRef.current.name
     };
 
     axios.post("http://127.0.0.1:5000/vehicles/polygon", dataToSend).then((response) => {
@@ -74,14 +75,9 @@ const MapComponent = () => {
     }),
     E: divIcon({
       html: "🚚️️",
-          className: "vehicle-icon",
+      className: "vehicle-icon",
     }),
   };
-
-  const vehicleIcon = divIcon({
-    html: "🚙",
-    className: "vehicle-icon",
-  });
 
   const handleFilterApply = (appliedFilter) => {
     setFilter(appliedFilter);
@@ -120,11 +116,23 @@ const MapComponent = () => {
           </FeatureGroup>
           {polygon && <Polygon positions={polygon} />}
           {filteredVehicles.map((vehicle, index) => {
-            const icon = iconsByClassName[vehicle.name] || vehicleIcon;
+            const icon = iconsByClassName[vehicle.name];
             return (
               <Marker key={index} position={[vehicle.lat, vehicle.lng]} icon={icon}>
-                <Popup>
-                  <span>Vehicle ID: {vehicle.id}</span>
+                <Popup className="custom-popup">
+                  <div>
+                    <b>ID:</b> {vehicle.id}
+                  </div>
+                  <div>
+                  <b>State: </b>
+                    {vehicle.state === "online"
+                      ? "Online 🟢"
+                      : vehicle.state === "in-ride"
+                      ? "In ride 🚥"
+                      : vehicle.state === "issues"
+                      ? "Issues ⚠️"
+                      : "Unknown"}
+                   </div>
                 </Popup>
               </Marker>
             );

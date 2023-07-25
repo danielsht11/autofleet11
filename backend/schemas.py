@@ -10,3 +10,15 @@ class VehicleSchema(PlainVehicleSchema):
     lat = fields.Float(attribute="location.lat")
     state = fields.Str()
     name = fields.Str(attribute="class.name")
+
+
+class PointSchema(Schema):
+    lng = fields.Float()
+    lat = fields.Float()
+
+
+class PolygonSchema(Schema):
+    points = fields.List(fields.Nested(PointSchema))
+    state = fields.Str()
+    name = fields.Str()
+
