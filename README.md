@@ -1,7 +1,13 @@
 # Setting Up the Project
 
-## Running the backend:
+Hello Autofleet team!
+As the task requires the project has two main components: server, client.
+The following file describes how to set up each component before running it locally. Let's dive in!
 
+### Server Prerequisites
+python 3.8.6 (at least)
+
+## Running the server:
 1. Create a virtual environment:
    ```
    python3 -m venv venv
@@ -17,7 +23,7 @@
      source venv/bin/activate
      ```
 
-3. Install required packages:
+3. Install requirements:
    ```
    pip install -r requirements.txt
    ```

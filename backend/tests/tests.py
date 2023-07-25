@@ -122,10 +122,8 @@ def test_get_all_vehicles_location(client, all_locations):
 def test_get_all_ids_in_polygon(client, polygon_points, vehicles_ids_in_polygon):
     polygon_data = {
         "points": polygon_points,
-        "filter": {
-            "state": "",
-            "name": ""
-        }
+        "state": "",
+        "name": ""
     }
     response: Response = client.post("vehicles/polygon", json=polygon_data)
     assert response.status_code == 200
